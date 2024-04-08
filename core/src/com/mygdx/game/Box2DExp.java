@@ -52,7 +52,7 @@ public class Box2DExp extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, WORLD_WIDTH, WORLD_HEIGHT);
 		touch = new Vector3();
-		world = new World(new Vector2(0, -9.8f), true);
+		world = new World(new Vector2(0, 0f), true);
 		debugRenderer = new Box2DDebugRenderer();
 
 		imgBetonTexture = new Texture("beton.png");
@@ -70,10 +70,10 @@ public class Box2DExp extends ApplicationAdapter {
 
 		platform = new KinematicBody(world, 0, 3, 3, 1);
 
-		for (int i = 0; i < 1; i++) {
-			Polygon polygon = new Polygon(new float[]{-1, -1, 1, -1, 0, 1});
-			Polygon polygon2 = new Polygon(new float[]{0, -1, 1, 1, -1, 1});
-			balls.add(new DynamicBody(world, 8 + MathUtils.random(-0.01f, 0.01f), WORLD_HEIGHT + i, polygon, polygon2));
+		for (int i = 0; i < 5; i++) {
+			Polygon polygon = new Polygon(new float[]{-1, 0, 0, 1, 1, 0});
+			Polygon polygon2 = new Polygon(new float[]{-1, 0, 0, -1, 1, 0});
+			balls.add(new DynamicBody(world, 3 + MathUtils.random(-2.01f, 2.01f), 3 + i, polygon, polygon2));
 			/*if(i%3 == 0) {
 				balls[i] = new DynamicBody(world, 8 + MathUtils.random(-0.01f, 0.01f), WORLD_HEIGHT + i, 0.4f);
 			} if(i%3 == 1) {
@@ -91,12 +91,17 @@ public class Box2DExp extends ApplicationAdapter {
 		if(Gdx.input.justTouched()){
 			touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 			camera.unproject(touch);
-			for (DynamicBody b: balls){
-				if(b.hit(touch.x, touch.y)){
-					b.setImpulse(new Vector2(0, 2));
-					if(b.click % 3 == 0 & b.type == TYPE_2POLY){
-						balls.add(new DynamicBody(world, b.getBody().getFixtureList().get(0)));
-						balls.add(new DynamicBody(world, b.getBody().getFixtureList().get(1)));
+			for (int i=0; i<balls.size; i++){
+				if(balls.get(i).hit(touch.x, touch.y)){
+					balls.get(i).setImpulse(new Vector2(0, 0));
+					if(balls.get(i).click % 3 == 0 & balls.get(i).type == TYPE_2POLY){
+						balls.get(i).setImpulse(new Vector2(0,0));
+						balls.add(new DynamicBody(world, balls.get(i).getBody().getFixtureList().get(0)));
+						balls.add(new DynamicBody(world, balls.get(i).getBody().getFixtureList().get(1)));
+						balls.get(balls.size-1).applyMyImpulse(2, true);
+						balls.get(balls.size-2).applyMyImpulse(2, false);
+						world.destroyBody(balls.get(i).getBody());
+						balls.removeIndex(i);
 					}
 				}
 			}

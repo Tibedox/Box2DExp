@@ -113,10 +113,10 @@ public class DynamicBody {
         this.y = y;
 
         for(int i=0; i<p1.getVertices().length; i++){
-            p1.getVertices()[i] /= 2.5f;
+            p1.getVertices()[i] /= 2f;
         }
         for(int i=0; i<p2.getVertices().length; i++){
-            p2.getVertices()[i] /= 2.5f;
+            p2.getVertices()[i] /= 2f;
         }
 
         BodyDef bodyDef = new BodyDef();
@@ -154,6 +154,7 @@ public class DynamicBody {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(f.getBody().getPosition().x, f.getBody().getPosition().y);
+        bodyDef.angle = f.getBody().getAngle();
 
         body = world.createBody(bodyDef);
 
@@ -162,9 +163,20 @@ public class DynamicBody {
         fixtureDef.density = f.getDensity();
         fixtureDef.friction = f.getFriction();
         fixtureDef.restitution = f.getRestitution();
-        System.out.println(fixtureDef.density+" "+fixtureDef.friction+" "+fixtureDef.restitution);
 
         fixture = body.createFixture(fixtureDef);
+    }
+
+    public void applyMyImpulse(float p1, boolean direction) {
+        Vector2 p = new Vector2(0, 1);
+        float angle = body.getAngle(); // Получаем текущий угол поворота тела
+        if(direction) angle += 180;
+        System.out.println(angle);
+        Vector2 impulse = new Vector2((float) Math.cos(angle)*p.x, (float) Math.sin(angle)*p.y);// Преобразуем угол в вектор направления
+        //System.out.println(impulse.toString());
+        //direction.normalize();// Нормализуем вектор направления
+
+        body.applyLinearImpulse(impulse, body.getWorldCenter(), true);// Применяем импульс к телу
     }
 
     public float getX() {
@@ -192,8 +204,13 @@ public class DynamicBody {
     }
 
     public boolean hit(float tx, float ty) {
-        click++;
-        return fixture.testPoint(tx, ty);
+        for(Fixture f: body.getFixtureList()) {
+            if(f.testPoint(tx, ty)) {
+                click++;
+                return f.testPoint(tx, ty);
+            }
+        }
+        return false;
     }
 
     public void setImpulse(Vector2 p){
