@@ -52,7 +52,7 @@ public class Box2DExp extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, WORLD_WIDTH, WORLD_HEIGHT);
 		touch = new Vector3();
-		world = new World(new Vector2(0, 0f), true);
+		world = new World(new Vector2(0, -9.8f), true);
 		debugRenderer = new Box2DDebugRenderer();
 
 		imgBetonTexture = new Texture("beton.png");
@@ -68,20 +68,24 @@ public class Box2DExp extends ApplicationAdapter {
 		wallLeft = new StaticBody(world, 0.5f, 5, 1, 8);
 		wallRight = new StaticBody(world, 15.5f, 5, 1, 8);
 
-		platform = new KinematicBody(world, 0, 3, 3, 1);
+		platform = new KinematicBody(world, 0, 2.5f, 3, 1);
 
-		for (int i = 0; i < 5; i++) {
-			Polygon polygon = new Polygon(new float[]{-1, 0, 0, 1, 1, 0});
-			Polygon polygon2 = new Polygon(new float[]{-1, 0, 0, -1, 1, 0});
-			balls.add(new DynamicBody(world, 3 + MathUtils.random(-2.01f, 2.01f), 3 + i, polygon, polygon2));
-			/*if(i%3 == 0) {
-				balls[i] = new DynamicBody(world, 8 + MathUtils.random(-0.01f, 0.01f), WORLD_HEIGHT + i, 0.4f);
-			} if(i%3 == 1) {
-				balls[i] = new DynamicBody(world, 8 + MathUtils.random(-0.01f, 0.01f), WORLD_HEIGHT + i, 1, 0.5f);
-			} if(i%3 == 2) {
+		for (int i = 0; i < 50; i++) {
+			if(i%4 == 0) {
+				Polygon polygon = new Polygon(new float[]{-1, 0, 0, 1, 1, 0});
+				Polygon polygon2 = new Polygon(new float[]{-1, 0, 0, -1, 1, 0});
+				balls.add(new DynamicBody(world, 8 + MathUtils.random(-0.01f, 0.01f), WORLD_HEIGHT + i*2, polygon, polygon2));
+			}
+			if(i%4 == 1) {
+				balls.add(new DynamicBody(world, 8 + MathUtils.random(-0.01f, 0.01f), WORLD_HEIGHT + i*2, 0.4f));
+			}
+			if(i%4 == 2) {
+				balls.add(new DynamicBody(world, 8 + MathUtils.random(-0.01f, 0.01f), WORLD_HEIGHT + i*2, 1, 0.5f));
+			}
+			if(i%4 == 3) {
 				Polygon polygon = new Polygon(new float[]{-1, -1, 1, -1, 0, 1});
-				balls[i] = new DynamicBody(world, 8 + MathUtils.random(-0.01f, 0.01f), WORLD_HEIGHT + i, polygon);
-			}*/
+				balls.add(new DynamicBody(world, 8 + MathUtils.random(-0.01f, 0.01f), WORLD_HEIGHT + i*2, polygon));
+			}
 		}
 	}
 
@@ -93,13 +97,13 @@ public class Box2DExp extends ApplicationAdapter {
 			camera.unproject(touch);
 			for (int i=0; i<balls.size; i++){
 				if(balls.get(i).hit(touch.x, touch.y)){
-					balls.get(i).setImpulse(new Vector2(0, 0));
+					balls.get(i).setImpulse(new Vector2(0, 3));
+					//if(balls.get(i).type == TYPE_2POLY) balls.get(i).setImpulse(new Vector2(0, 1));
 					if(balls.get(i).click % 3 == 0 & balls.get(i).type == TYPE_2POLY){
-						balls.get(i).setImpulse(new Vector2(0,0));
 						balls.add(new DynamicBody(world, balls.get(i).getBody().getFixtureList().get(0)));
 						balls.add(new DynamicBody(world, balls.get(i).getBody().getFixtureList().get(1)));
-						balls.get(balls.size-1).applyMyImpulse(2, true);
-						balls.get(balls.size-2).applyMyImpulse(2, false);
+						balls.get(balls.size-1).applySlashImpulse(true);
+						balls.get(balls.size-2).applySlashImpulse(false);
 						world.destroyBody(balls.get(i).getBody());
 						balls.removeIndex(i);
 					}
