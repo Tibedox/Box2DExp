@@ -24,7 +24,7 @@ public class DynamicBody {
     public int click;
 
     DynamicBody(World world, float x, float y, float r){
-        type = TYPE_SMILE;
+        type = TYPE_CIRCLE;
         this.x = x;
         this.y = y;
         this.r = r;
@@ -81,8 +81,8 @@ public class DynamicBody {
         type = TYPE_POLY;
         this.x = x;
         this.y = y;
-        this.width = 2;
-        this.height = 2;
+        this.width = p.getBoundingRectangle().getWidth()/2.5f;
+        this.height = p.getBoundingRectangle().getHeight()/2.5f;
         for(int i=0; i<p.getVertices().length; i++){
             p.getVertices()[i] /= 2.5f;
         }
@@ -151,8 +151,8 @@ public class DynamicBody {
 
     DynamicBody (World world, Fixture f){
         type = TYPE_POLY;
-        this.width = 2;
-        this.height = 2;
+        this.width = 0.2f;
+        this.height = 0.2f;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;

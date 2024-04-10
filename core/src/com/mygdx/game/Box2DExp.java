@@ -18,7 +18,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 public class Box2DExp extends ApplicationAdapter {
 	// глобальные константы
 	public static final float WORLD_WIDTH = 16, WORLD_HEIGHT = 9;
-	public static final int TYPE_SMILE = 0, TYPE_BRICK = 1, TYPE_POLY = 2, TYPE_2POLY = 3;
+	public static final int TYPE_CIRCLE = 0, TYPE_BRICK = 1, TYPE_POLY = 2, TYPE_2POLY = 3;
 
 	// системные объекты
 	SpriteBatch batch;
@@ -28,15 +28,13 @@ public class Box2DExp extends ApplicationAdapter {
 	Box2DDebugRenderer debugRenderer;
 
 	// ресурсы
-	Texture imgBetonTexture;
-	Texture imgSmileTexture;
-	Texture imgBrickTexture;
-	Texture imgGrassTexture;
-	TextureRegion imgSmile;
-	TextureRegion imgBrick;
-	TextureRegion imgBeton;
-	TextureRegion imgGrass;
-	TextureRegion img;
+	Texture imgLootAtlas;
+	TextureRegion imgBoxLightGray;
+	TextureRegion imgBoxMediumGray;
+	TextureRegion imgBoxPurple;
+	TextureRegion imgCircle;
+	TextureRegion imgTriPurple;
+	TextureRegion imgLoot;
 
 	// наши объекты и переменные
 	StaticBody floor;
@@ -56,14 +54,12 @@ public class Box2DExp extends ApplicationAdapter {
 		debugRenderer = new Box2DDebugRenderer();
 		//debugRenderer.setDrawVelocities(true);
 
-		imgBetonTexture = new Texture("beton.png");
-		imgSmileTexture = new Texture("smile.png");
-		imgBrickTexture = new Texture("brick.png");
-		imgGrassTexture = new Texture("grass.png");
-		imgSmile = new TextureRegion(imgSmileTexture, 0, 0, 128, 128);
-		imgBrick = new TextureRegion(imgBrickTexture, 0, 0, 100, 100);
-		imgBeton = new TextureRegion(imgBetonTexture, 0, 0, 100, 100);
-		imgGrass = new TextureRegion(imgGrassTexture, 0, 0, 100, 100);
+		imgLootAtlas = new Texture("atlasloot.png");
+		imgBoxLightGray = new TextureRegion(imgLootAtlas, 0, 0, 256, 256);
+		imgBoxMediumGray = new TextureRegion(imgLootAtlas, 256, 0, 256, 256);
+		imgBoxPurple = new TextureRegion(imgLootAtlas, 256*2, 0, 256, 256);
+		imgCircle = new TextureRegion(imgLootAtlas, 256*3, 0, 256, 256);
+		imgTriPurple = new TextureRegion(imgLootAtlas, 256, 256, 256, 256);
 
 		floor = new StaticBody(world, 8, 0.5f, 16, 1);
 		wallLeft = new StaticBody(world, 0.5f, 5, 1, 8);
@@ -126,26 +122,24 @@ public class Box2DExp extends ApplicationAdapter {
 		debugRenderer.render(world, camera.combined);
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
-	/*	batch.draw(imgBeton, floor.getX(), floor.getY(), floor.getWidth(), floor.getHeight());
-		batch.draw(imgGrass, wallLeft.getX(), wallLeft.getY(), wallLeft.getWidth(), wallLeft.getHeight());
-		batch.draw(imgGrass, wallRight.getX(), wallRight.getY(), wallRight.getWidth(), wallRight.getHeight());
-		batch.draw(imgBeton, platform.getX(), platform.getY(), platform.getWidth()/2, platform.getHeight()/2,
-				platform.getWidth(), platform.getHeight(), 1, 1, platform.getAngle());
+		batch.draw(imgBoxMediumGray, floor.getX(), floor.getY(), floor.getWidth(), floor.getHeight());
+		batch.draw(imgBoxMediumGray, wallLeft.getX(), wallLeft.getY(), wallLeft.getWidth(), wallLeft.getHeight());
+		batch.draw(imgBoxMediumGray, wallRight.getX(), wallRight.getY(), wallRight.getWidth(), wallRight.getHeight());
+		/*batch.draw(imgBoxLightGray, platform.getX(), platform.getY(), platform.getWidth()/2, platform.getHeight()/2,
+				platform.getWidth(), platform.getHeight(), 1, 1, platform.getAngle());*/
 		for (DynamicBody b: balls) {
-			if(b.type == TYPE_SMILE) img = imgSmile;
-			else img = imgBrick;
-			batch.draw(img, b.getX(), b.getY(), b.getWidth()/2, b.getHeight()/2, b.getWidth(), b.getHeight(), 1, 1, b.getAngle());
-		}*/
+			if(b.type == TYPE_CIRCLE) imgLoot = imgCircle;
+			else if(b.type == TYPE_BRICK) imgLoot = imgBoxPurple;
+			else imgLoot = imgTriPurple;
+			batch.draw(imgLoot, b.getX(), b.getY(), b.getWidth()/2, b.getHeight()/2, b.getWidth(), b.getHeight(), 1, 1, b.getAngle());
+		}
 		batch.end();
 	}
 
 	@Override
 	public void dispose () {
 		batch.dispose();
-		imgBetonTexture.dispose();
-		imgSmileTexture.dispose();
-		imgBrickTexture.dispose();
-		imgGrassTexture.dispose();
+		imgLootAtlas.dispose();
 		world.dispose();
 		debugRenderer.dispose();
 	}
