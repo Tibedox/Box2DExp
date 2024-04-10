@@ -142,10 +142,11 @@ public class DynamicBody {
         fixtureDef2.restitution = 0.4f; // упругость
         fixture = body.createFixture(fixtureDef);
         fixture2 = body.createFixture(fixtureDef2);
+
         shape.dispose();
         shape2.dispose();
 
-        body.setTransform(body.getPosition(), 45);
+        body.setTransform(body.getPosition(), MathUtils.random(0, 360)*MathUtils.degreesToRadians);
     }
 
     DynamicBody (World world, Fixture f){
@@ -169,12 +170,11 @@ public class DynamicBody {
         fixture = body.createFixture(fixtureDef);
     }
 
-    public void applySlashImpulse(boolean direction) {
-        Vector2 p = new Vector2(0, 0.1f);
-        float angle = body.getAngle(); // Получаем текущий угол поворота тела
-        if(direction) angle += 180;
-        Vector2 impulse = new Vector2((float) Math.cos(angle)*p.x, (float) Math.sin(angle)*p.y);
-        body.applyLinearImpulse(impulse, body.getLocalCenter(), true);
+    public void applySlashImpulse(float force, boolean direction) {
+        float angle = body.getAngle()+90*MathUtils.degreesToRadians;// хз зачем +90!
+        if(direction) angle += 180*MathUtils.degreesToRadians;
+        Vector2 impulse = new Vector2(force * MathUtils.cos(angle), force * MathUtils.sin(angle));
+        body.applyLinearImpulse(impulse, body.getWorldCenter(), true);
     }
 
     public float getX() {
@@ -212,6 +212,6 @@ public class DynamicBody {
     }
 
     public void setImpulse(Vector2 p){
-        body.applyLinearImpulse(p, body.getPosition(), true);
+        body.applyLinearImpulse(p, body.getWorldCenter(), true);
     }
 }
